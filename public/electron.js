@@ -5,6 +5,8 @@ const BrowserWindow = electron.BrowserWindow;
 const path = require("path");
 const isDev = require("electron-is-dev");
 
+const { Reddit } = require("./api-calls");
+
 let mainWindow;
 
 function createWindow() {
