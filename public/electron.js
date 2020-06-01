@@ -1,4 +1,5 @@
 const electron = require("electron");
+const { ipcMain } = require("electron");
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 
@@ -40,4 +41,11 @@ app.on("activate", () => {
   if (mainWindow === null) {
     createWindow();
   }
+});
+
+const reddit = new Reddit();
+
+ipcMain.handle("get-data-hot", async (event, args) => {
+  const result = await reddit.getHot();
+  return result.toJSON();
 });
