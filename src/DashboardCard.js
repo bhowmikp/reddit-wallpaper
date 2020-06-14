@@ -11,8 +11,9 @@ import Collapse from "@material-ui/core/Collapse";
 import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import FavoriteIcon from "@material-ui/icons/Favorite";
-import ShareIcon from "@material-ui/icons/Share";
+import WallpaperIcon from "@material-ui/icons/Wallpaper";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import Tooltip from "@material-ui/core/Tooltip";
 
 const { shell } = require("electron");
 
@@ -21,7 +22,6 @@ const useStyles = makeStyles(theme => ({
     maxHeight: "100%",
     marginBottom: 1
   },
-  media: {},
   expand: {
     transform: "rotate(0deg)",
     marginLeft: "auto",
@@ -52,7 +52,6 @@ const DashboardCard = ({ entry }) => {
         />
 
         <CardMedia
-          className={classes.media}
           src={entry.url}
           title={entry.title}
           component="img"
@@ -69,27 +68,47 @@ const DashboardCard = ({ entry }) => {
       </CardActionArea>
 
       <CardActions disableSpacing>
-        <IconButton aria-label="add to favorites">
-          <FavoriteIcon />
-        </IconButton>
-        <IconButton aria-label="share">
-          <ShareIcon />
-        </IconButton>
-        <IconButton
-          className={clsx(classes.expand, {
-            [classes.expandOpen]: expanded
-          })}
-          onClick={handleExpandClick}
-          aria-expanded={expanded}
-          aria-label="show more"
-        >
-          <ExpandMoreIcon />
-        </IconButton>
+        <Tooltip title="Add favourite">
+          <IconButton aria-label="add to favorites">
+            <FavoriteIcon />
+          </IconButton>
+        </Tooltip>
+
+        <Tooltip title="Set Wallpaper">
+          <IconButton aria-label="wallpaper">
+            <WallpaperIcon />
+          </IconButton>
+        </Tooltip>
+
+        <Tooltip title="Expand/Collapse Content">
+          <IconButton
+            className={clsx(classes.expand, {
+              [classes.expandOpen]: expanded
+            })}
+            onClick={handleExpandClick}
+            aria-expanded={expanded}
+            aria-label="show more"
+          >
+            <ExpandMoreIcon />
+          </IconButton>
+        </Tooltip>
       </CardActions>
 
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
-          <Typography>Author: {entry.author}</Typography>
+          <Typography>
+            Author:{" "}
+            <a
+              href={`https://reddit.com/user/${entry.author}`}
+              onClick={e => {
+                e.preventDefault();
+                shell.openExternal(`https://reddit.com/user/${entry.author}`);
+              }}
+            >
+              {entry.author}
+            </a>
+          </Typography>
+
           <Typography>
             Comments:{" "}
             <a
@@ -102,6 +121,7 @@ const DashboardCard = ({ entry }) => {
               Link
             </a>
           </Typography>
+
           <Typography>Upvote Ratio: {entry.upvote_ratio}</Typography>
         </CardContent>
       </Collapse>
