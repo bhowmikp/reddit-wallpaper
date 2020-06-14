@@ -1,34 +1,12 @@
-import React, { useState } from "react";
-import isEmpty from "lodash/isEmpty";
-const { ipcRenderer } = require("electron");
+import React from "react";
+import Dashboard from "./Dashboard";
 
-function App() {
-  const [data, setData] = useState({});
-
-  const getData = async () => {
-    setData(await ipcRenderer.invoke("get-data-hot"));
-  };
-
-  if (isEmpty(data)) {
-    getData();
-  }
-
+const App = () => {
   return (
-    <div className="App">
-      {isEmpty(data) ? (
-        <p>Searching...</p>
-      ) : (
-        data.map(entry => {
-          return (
-            <div key={entry.id}>
-              <img src={entry.url} alt={entry.title} width="100%" />
-              <p>{entry.title}</p>
-            </div>
-          );
-        })
-      )}
+    <div>
+      <Dashboard />
     </div>
   );
-}
+};
 
 export default App;

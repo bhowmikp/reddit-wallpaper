@@ -45,7 +45,7 @@ app.on("activate", () => {
 
 const reddit = new Reddit();
 
-ipcMain.handle("get-data-hot", async (event, args) => {
-  const result = await reddit.getHot();
-  return result.toJSON();
+ipcMain.handle("get-data", async (event, args) => {
+  const result = await reddit.getData(args);
+  return JSON.stringify(result);
 });

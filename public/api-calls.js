@@ -11,22 +11,25 @@ class Reddit {
     });
   }
 
-  async getHot(subreddits = ["wallpapers"], time = "week", limit = 10) {
-    return await this.r
-      .getSubreddit(subreddits.join("+"))
-      .getHot({ time: time, limit: limit });
-  }
+  async getData(params) {
+    const sortBy = params.sortBy === undefined ? "hot" : params.sortBy;
+    const subreddits =
+      params.subreddits === undefined ? ["wallpapers"] : params.subreddits;
+    const time = params.time === undefined ? "week" : params.time;
+    const limit = params.limit === undefined ? 10 : params.limit;
 
-  async getTop(subreddits = ["wallpapers"], time = "week", limit = 10) {
-    return await this.r
-      .getSubreddit(subreddits.join("+"))
-      .getTop({ time: time, limit: limit });
-  }
+    const subredditData = this.r.getSubreddit(subreddits.join("+"));
 
-  async getNew(subreddits = ["wallpapers"], time = "week", limit = 10) {
-    return await this.r
-      .getSubreddit(subreddits.join("+"))
-      .getNew({ time: time, limit: limit });
+    switch (sortBy) {
+      case "hot":
+        return await subredditData.getHot({ time: time, limit: limit });
+      case "top":
+        return await subredditData.getTop({ time: time, limit: limit });
+      case "new":
+        return await subredditData.getNew({ time: time, limit: limit });
+      default:
+        return await subredditData.getHot();
+    }
   }
 }
 
