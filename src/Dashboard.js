@@ -1,16 +1,11 @@
 import React, { useState } from "react";
 import isEmpty from "lodash/isEmpty";
+import { useFormik } from "formik";
+import DashboardCard from "./DashboardCard";
+
 const { ipcRenderer } = require("electron");
 
-const Filter = ({
-  sortBy,
-  time,
-  limit,
-  setSortBy,
-  setTime,
-  setLimit,
-  setData
-}) => {
+const Filter = ({ formik, setData }) => {
   const sortByOptions = ["Hot", "Top", "New"];
   const timeOptions = ["Hour", "Day", "Week", "Month", "Year", "All"];
   const limitOptions = [5, 10, 15, 20, 25, 50];
@@ -22,10 +17,14 @@ const Filter = ({
   return (
     <div>
       <select
-        value={sortBy}
+        value={formik.values.sortBy}
         onChange={e => {
-          setSortBy(e.target.value);
-          fetchData({ sortBy: e.target.value, time: time, limit: limit });
+          formik.values.sortBy = e.target.value;
+          fetchData({
+            sortBy: e.target.value,
+            time: formik.values.time,
+            limit: formik.values.limit
+          });
         }}
       >
         {sortByOptions.map(entry => {
@@ -42,12 +41,16 @@ const Filter = ({
       </select>
 
       <select
-        value={time}
+        value={formik.values.time}
         onChange={e => {
-          setTime(e.target.value);
-          fetchData({ sortBy: sortBy, time: e.target.value, limit: limit });
+          formik.values.time = e.target.value;
+          fetchData({
+            sortBy: formik.values.sortBy,
+            time: e.target.value,
+            limit: formik.values.limit
+          });
         }}
-        disabled={sortBy !== "top"}
+        disabled={formik.values.sortBy !== "top"}
       >
         {timeOptions.map(entry => {
           return (
@@ -63,10 +66,14 @@ const Filter = ({
       </select>
 
       <select
-        value={limit}
+        value={formik.values.limit}
         onChange={e => {
-          setLimit(e.target.value);
-          fetchData({ sortBy: sortBy, time: time, limit: e.target.value });
+          formik.values.limit = e.target.value;
+          fetchData({
+            sortBy: formik.values.sortBy,
+            time: formik.values.time,
+            limit: e.target.value
+          });
         }}
       >
         {limitOptions.map(entry => {
@@ -87,17 +94,22 @@ const Filter = ({
 
 const Dashboard = () => {
   const [data, setData] = useState({});
-  const [sortBy, setSortBy] = useState("hot");
-  const [time, setTime] = useState("week");
-  const [limit, setLimit] = useState(25);
+
+  const formik = useFormik({
+    initialValues: {
+      sortBy: "hot",
+      time: "week",
+      limit: 25
+    }
+  });
 
   const fetchDataInitial = async () => {
     setData(
       JSON.parse(
         await ipcRenderer.invoke("get-data", {
-          sortBy: sortBy,
-          time: time,
-          limit: limit
+          sortBy: formik.values.sortBy,
+          time: formik.values.time,
+          limit: formik.values.limit
         })
       )
     );
@@ -109,25 +121,12 @@ const Dashboard = () => {
 
   return (
     <div>
-      <Filter
-        sortBy={sortBy}
-        time={time}
-        limit={limit}
-        setSortBy={setSortBy}
-        setTime={setTime}
-        setLimit={setLimit}
-        setData={setData}
-      />
+      <Filter formik={formik} setData={setData} />
       {isEmpty(data) ? (
         <p>Searching...</p>
       ) : (
         data.map(entry => {
-          return (
-            <div key={entry.id}>
-              <img src={entry.url} alt={entry.title} width="100%" />
-              <p>{entry.title}</p>
-            </div>
-          );
+          return <DashboardCard entry={entry} />;
         })
       )}
     </div>
