@@ -2,7 +2,7 @@
   "name": "react-wallpaper",
   "version": "0.1.0",
   "private": true,
-  "main": "public/electron.js",
+  "main": "server/electron.js",
   "homepage": "./",
   "dependencies": {
     "@material-ui/core": "^4.10.2",
@@ -13,6 +13,7 @@
     "@testing-library/user-event": "^7.1.2",
     "dotenv": "^8.2.0",
     "electron-is-dev": "^1.2.0",
+    "electron-store": "^5.2.0",
     "formik": "^2.1.4",
     "lodash": "^4.17.15",
     "react": "^16.13.1",

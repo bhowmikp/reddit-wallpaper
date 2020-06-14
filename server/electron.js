@@ -6,7 +6,7 @@ const BrowserWindow = electron.BrowserWindow;
 const path = require("path");
 const isDev = require("electron-is-dev");
 
-const { Reddit } = require("./api-calls");
+const { Reddit } = require("../Service/Main/RedditService");
 
 let mainWindow;
 
@@ -49,3 +49,5 @@ ipcMain.handle("get-data", async (event, args) => {
   const result = await reddit.getData(args);
   return JSON.stringify(result);
 });
+
+console.log(app.getPath("userData"));
