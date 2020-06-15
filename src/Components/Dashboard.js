@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import isEmpty from "lodash/isEmpty";
 import { useFormik } from "formik";
-import DashboardCard from "./DashboardCard";
-
+import ImageCard from "../Shared/ImageCard";
 import { makeStyles } from "@material-ui/core/styles";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -138,7 +137,7 @@ const Dashboard = () => {
         <p>Searching...</p>
       ) : (
         data.map(entry => {
-          return <DashboardCard entry={entry} key={entry.id} />;
+          return <ImageCard entry={entry} key={entry.id} />;
         })
       )}
     </div>

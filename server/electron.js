@@ -6,7 +6,7 @@ const BrowserWindow = electron.BrowserWindow;
 const path = require("path");
 const isDev = require("electron-is-dev");
 
-const { Reddit } = require("./api-calls");
+const { Reddit } = require("./service/RedditService");
 
 let mainWindow;
 
