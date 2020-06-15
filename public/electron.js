@@ -18,7 +18,7 @@ function createWindow() {
   });
   mainWindow.loadURL(
     isDev
-      ? `file://${path.join(__dirname, "../build/index.html")}`
+      ? "http://localhost:3000"
       : `file://${path.join(__dirname, "../build/index.html")}`
   );
   if (isDev) {
