@@ -22,7 +22,7 @@ const { shell } = require("electron");
 const useStyles = makeStyles(theme => ({
   root: {
     maxHeight: "100%",
-    marginBottom: 1
+    marginBottom: 20
   },
   expand: {
     transform: "rotate(0deg)",

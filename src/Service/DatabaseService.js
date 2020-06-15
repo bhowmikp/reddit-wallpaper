@@ -6,11 +6,11 @@ export class DatabaseService {
   }
 
   setFavourite(entry) {
-    this.store.set(`favourites.${entry.permalink}`, entry);
+    this.store.set(`favourites.${entry.id}`, entry);
   }
 
   deleteFavourite(entry) {
-    this.store.delete(`favourites.${entry.permalink}`);
+    this.store.delete(`favourites.${entry.id}`);
   }
 
   getFavourite() {
@@ -19,6 +19,6 @@ export class DatabaseService {
   }
 
   hasFavourite(entry) {
-    return this.store.has(`favourites.${entry.permalink}`);
+    return this.store.has(`favourites.${entry.id}`);
   }
 }
