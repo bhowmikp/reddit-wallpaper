@@ -6,7 +6,7 @@ const BrowserWindow = electron.BrowserWindow;
 const path = require("path");
 const isDev = require("electron-is-dev");
 
-const { Reddit } = require("./service/RedditService");
+const { Reddit } = require("./server/service/RedditService");
 
 let mainWindow;
 
@@ -18,7 +18,7 @@ function createWindow() {
   });
   mainWindow.loadURL(
     isDev
-      ? "http://localhost:3000"
+      ? `file://${path.join(__dirname, "../build/index.html")}`
       : `file://${path.join(__dirname, "../build/index.html")}`
   );
   if (isDev) {
