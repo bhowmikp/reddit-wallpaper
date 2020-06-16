@@ -2,7 +2,7 @@
   "name": "react-wallpaper",
   "version": "0.1.0",
   "private": true,
-  "main": "server/electron.js",
+  "main": "public/electron.js",
   "homepage": "./",
   "dependencies": {
     "@material-ui/core": "^4.10.2",
@@ -65,7 +65,7 @@
   },
   "build": {
     "appId": "com.my-website.my-app",
-    "productName": "MyApp",
+    "productName": "WallPaper for Reddit",
     "copyright": "Copyright © 2019 ${author}",
     "mac": {
       "category": "public.app-category.utilities"
