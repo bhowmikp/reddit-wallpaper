@@ -2,11 +2,14 @@ import React, { useState } from "react";
 import isEmpty from "lodash/isEmpty";
 import { useFormik } from "formik";
 import ImageCard from "../Shared/ImageCard";
+import Scroll from "../Shared/Scroll";
 import { makeStyles } from "@material-ui/core/styles";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
+import Search from "./Search";
+import Grid from "@material-ui/core/Grid";
 
 const { ipcRenderer } = require("electron");
 
@@ -37,9 +40,8 @@ const Filter = ({ formik, setData }) => {
           onChange={e => {
             formik.values.sortBy = e.target.value;
             fetchData({
-              sortBy: e.target.value,
-              time: formik.values.time,
-              limit: formik.values.limit
+              ...formik.values,
+              sortBy: e.target.value
             });
           }}
         >
@@ -60,9 +62,8 @@ const Filter = ({ formik, setData }) => {
           onChange={e => {
             formik.values.time = e.target.value;
             fetchData({
-              sortBy: formik.values.sortBy,
-              time: e.target.value,
-              limit: formik.values.limit
+              ...formik.values,
+              time: e.target.value
             });
           }}
           disabled={formik.values.sortBy !== "top"}
@@ -84,8 +85,7 @@ const Filter = ({ formik, setData }) => {
           onChange={e => {
             formik.values.limit = e.target.value;
             fetchData({
-              sortBy: formik.values.sortBy,
-              time: formik.values.time,
+              ...formik.values,
               limit: e.target.value
             });
           }}
@@ -110,29 +110,37 @@ const Dashboard = () => {
     initialValues: {
       sortBy: "hot",
       time: "week",
-      limit: 25
+      limit: 25,
+      subreddits: ["wallpapers"]
     }
   });
 
-  const fetchDataInitial = async () => {
+  const fetchData = async () => {
     setData(
       JSON.parse(
         await ipcRenderer.invoke("get-data", {
-          sortBy: formik.values.sortBy,
-          time: formik.values.time,
-          limit: formik.values.limit
+          ...formik.values
         })
       )
     );
   };
 
   if (isEmpty(data)) {
-    fetchDataInitial();
+    fetchData();
   }
 
   return (
     <div>
-      <Filter formik={formik} setData={setData} />
+      <Grid container spacing={2}>
+        <Grid item xs={6} style={{ paddingTop: "15px" }}>
+          <Search formik={formik} fetchData={fetchData} />
+        </Grid>
+        <Grid item xs={6} id="dashboardFilter">
+          <Filter formik={formik} setData={setData} />
+        </Grid>
+      </Grid>
+      <Scroll />
+
       {isEmpty(data) ? (
         <p>Searching...</p>
       ) : (
