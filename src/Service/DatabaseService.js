@@ -20,4 +20,8 @@ export class DatabaseService {
   hasFavourite(entry) {
     return this.store.has(`favourites.${entry.id}`);
   }
+
+  getFavouriteCount() {
+    return Object.keys(this.store.get("favourites")).length;
+  }
 }

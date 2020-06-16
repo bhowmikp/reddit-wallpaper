@@ -5,20 +5,23 @@ import ImageCard from "../Shared/ImageCard";
 
 const Favourites = () => {
   const [data, setData] = useState({});
+  const [resultsNumber, setResultsNumber] = useState(0);
   const databaseService = new DatabaseService();
   let [shouldCheck, setShouldCheck] = useState(true);
 
   if (shouldCheck === true && isEmpty(data)) {
     setShouldCheck(false);
     setData(databaseService.getFavourite());
+    setResultsNumber(databaseService.getFavouriteCount());
   }
 
   return (
     <div>
       {isEmpty(data) ? (
-        <p>Searching...</p>
+        <p>Found {resultsNumber} results</p>
       ) : (
         <div>
+          <p>Found {resultsNumber} results</p>
           {Object.entries(data).map(entry => {
             return <ImageCard entry={entry[1]} key={entry[1].id} />;
           })}
