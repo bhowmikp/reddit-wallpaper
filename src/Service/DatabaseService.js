@@ -14,7 +14,6 @@ export class DatabaseService {
   }
 
   getFavourite() {
-    console.log("GET FAVOURITE");
     return this.store.get("favourites");
   }
 
