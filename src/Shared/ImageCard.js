@@ -15,6 +15,7 @@ import WallpaperIcon from "@material-ui/icons/Wallpaper";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import FavoriteBorder from "@material-ui/icons/FavoriteBorder";
 import Tooltip from "@material-ui/core/Tooltip";
+import Snackbar from "@material-ui/core/Snackbar";
 import { DatabaseService } from "../Service/DatabaseService";
 
 const { shell } = require("electron");
@@ -45,118 +46,136 @@ const ImageCard = ({ entry }) => {
   const [favouriteStatus, setFavouriteStatus] = useState(
     databaseService.hasFavourite(entry)
   );
+  const [snackInfo, setSnackInfo] = useState({ open: false, message: "" });
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
 
   return displayStatus === true ? (
-    <Card className={classes.root}>
-      <CardActionArea>
-        <CardHeader
-          title={entry.title}
-          subheader={new Date(entry.created * 1000).toDateString()}
-        />
+    <div>
+      <Card className={classes.root}>
+        <CardActionArea>
+          <CardHeader
+            title={entry.title}
+            subheader={new Date(entry.created * 1000).toDateString()}
+          />
 
-        <CardMedia
-          src={entry.url}
-          title={entry.title}
-          component="img"
-          onError={e => {
-            setDisplayStatus(false);
-          }}
-        />
+          <CardMedia
+            src={entry.url}
+            title={entry.title}
+            component="img"
+            onError={e => {
+              setDisplayStatus(false);
+            }}
+          />
 
-        <CardContent>
-          <Typography variant="body2" color="textSecondary" component="p">
-            Subreddit: {entry.subreddit}
-          </Typography>
-        </CardContent>
-      </CardActionArea>
+          <CardContent>
+            <Typography variant="body2" color="textSecondary" component="p">
+              Subreddit: {entry.subreddit}
+            </Typography>
+          </CardContent>
+        </CardActionArea>
 
-      <CardActions disableSpacing>
-        {favouriteStatus ? (
-          <div>
-            <Tooltip title="Remove favourite">
-              <IconButton
-                aria-label="remove favourite"
+        <CardActions disableSpacing>
+          {favouriteStatus ? (
+            <div>
+              <Tooltip title="Remove favourite">
+                <IconButton
+                  aria-label="remove favourite"
+                  onClick={e => {
+                    databaseService.deleteFavourite(entry);
+                    setFavouriteStatus(databaseService.hasFavourite(entry));
+                    setSnackInfo({ open: true, message: "Favourite Removed" });
+                  }}
+                >
+                  <FavoriteIcon />
+                </IconButton>
+              </Tooltip>
+            </div>
+          ) : (
+            <div>
+              <Tooltip title="Add favourite">
+                <IconButton
+                  aria-label="add to favorites"
+                  onClick={e => {
+                    databaseService.setFavourite(entry);
+                    setFavouriteStatus(databaseService.hasFavourite(entry));
+                    setSnackInfo({ open: true, message: "Favourite Added" });
+                  }}
+                >
+                  <FavoriteBorder />
+                </IconButton>
+              </Tooltip>
+            </div>
+          )}
+
+          <Tooltip title="Set Wallpaper">
+            <IconButton aria-label="wallpaper">
+              <WallpaperIcon />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="Expand/Collapse Content">
+            <IconButton
+              className={clsx(classes.expand, {
+                [classes.expandOpen]: expanded
+              })}
+              onClick={handleExpandClick}
+              aria-expanded={expanded}
+              aria-label="show more"
+            >
+              <ExpandMoreIcon />
+            </IconButton>
+          </Tooltip>
+        </CardActions>
+
+        <Collapse in={expanded} timeout="auto" unmountOnExit>
+          <CardContent>
+            <Typography>
+              Author:{" "}
+              <a
+                href={`https://reddit.com/user/${entry.author}`}
                 onClick={e => {
-                  databaseService.deleteFavourite(entry);
-                  setFavouriteStatus(databaseService.hasFavourite(entry));
+                  e.preventDefault();
+                  shell.openExternal(`https://reddit.com/user/${entry.author}`);
                 }}
               >
-                <FavoriteIcon />
-              </IconButton>
-            </Tooltip>
-          </div>
-        ) : (
-          <div>
-            <Tooltip title="Add favourite">
-              <IconButton
-                aria-label="add to favorites"
+                {entry.author}
+              </a>
+            </Typography>
+
+            <Typography>
+              Comments:{" "}
+              <a
+                href={`https://reddit.com${entry.permalink}`}
                 onClick={e => {
-                  databaseService.setFavourite(entry);
-                  setFavouriteStatus(databaseService.hasFavourite(entry));
+                  e.preventDefault();
+                  shell.openExternal(`https://reddit.com${entry.permalink}`);
                 }}
               >
-                <FavoriteBorder />
-              </IconButton>
-            </Tooltip>
-          </div>
-        )}
+                Link
+              </a>
+            </Typography>
 
-        <Tooltip title="Set Wallpaper">
-          <IconButton aria-label="wallpaper">
-            <WallpaperIcon />
-          </IconButton>
-        </Tooltip>
+            <Typography>Upvote Ratio: {entry.upvote_ratio}</Typography>
+          </CardContent>
+        </Collapse>
+      </Card>
 
-        <Tooltip title="Expand/Collapse Content">
-          <IconButton
-            className={clsx(classes.expand, {
-              [classes.expandOpen]: expanded
-            })}
-            onClick={handleExpandClick}
-            aria-expanded={expanded}
-            aria-label="show more"
-          >
-            <ExpandMoreIcon />
-          </IconButton>
-        </Tooltip>
-      </CardActions>
-
-      <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <CardContent>
-          <Typography>
-            Author:{" "}
-            <a
-              href={`https://reddit.com/user/${entry.author}`}
-              onClick={e => {
-                e.preventDefault();
-                shell.openExternal(`https://reddit.com/user/${entry.author}`);
-              }}
-            >
-              {entry.author}
-            </a>
-          </Typography>
-
-          <Typography>
-            Comments:{" "}
-            <a
-              href={`https://reddit.com${entry.permalink}`}
-              onClick={e => {
-                e.preventDefault();
-                shell.openExternal(`https://reddit.com${entry.permalink}`);
-              }}
-            >
-              Link
-            </a>
-          </Typography>
-
-          <Typography>Upvote Ratio: {entry.upvote_ratio}</Typography>
-        </CardContent>
-      </Collapse>
-    </Card>
+      <Snackbar
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "center"
+        }}
+        open={snackInfo.open}
+        autoHideDuration={1000}
+        onClose={() => {
+          setSnackInfo({ ...snackInfo, open: false });
+        }}
+        message={snackInfo.message}
+      />
+    </div>
   ) : null;
 };
 

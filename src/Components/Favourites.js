@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import isEmpty from "lodash/isEmpty";
 import { DatabaseService } from "../Service/DatabaseService";
 import ImageCard from "../Shared/ImageCard";
+import Scroll from "../Shared/Scroll";
 
 const Favourites = () => {
   const [data, setData] = useState({});
   const [resultsNumber, setResultsNumber] = useState(0);
   const databaseService = new DatabaseService();
-  let [shouldCheck, setShouldCheck] = useState(true);
+  const [shouldCheck, setShouldCheck] = useState(true);
 
   if (shouldCheck === true && isEmpty(data)) {
     setShouldCheck(false);
@@ -27,6 +28,8 @@ const Favourites = () => {
           })}
         </div>
       )}
+
+      <Scroll />
     </div>
   );
 };
