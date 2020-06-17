@@ -29,6 +29,7 @@ const Search = ({ formik, fetchData }) => {
 
   const submit = () => {
     formik.setFieldValue("subreddits", searchTerms.split("+"));
+    console.log(formik.values);
     fetchData();
   };
 
