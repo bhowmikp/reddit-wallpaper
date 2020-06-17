@@ -19,6 +19,7 @@ import Snackbar from "@material-ui/core/Snackbar";
 import { DatabaseService } from "../Service/DatabaseService";
 
 const { shell } = require("electron");
+const { ipcRenderer } = require("electron");
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -50,6 +51,10 @@ const ImageCard = ({ entry }) => {
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
+  };
+
+  const setWallpaper = url => {
+    ipcRenderer.invoke("set-wallpaper", url);
   };
 
   return displayStatus === true ? (
@@ -111,7 +116,12 @@ const ImageCard = ({ entry }) => {
           )}
 
           <Tooltip title="Set Wallpaper">
-            <IconButton aria-label="wallpaper">
+            <IconButton
+              aria-label="wallpaper"
+              onClick={e => {
+                setWallpaper(entry.url);
+              }}
+            >
               <WallpaperIcon />
             </IconButton>
           </Tooltip>

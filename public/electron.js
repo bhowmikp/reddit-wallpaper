@@ -4,9 +4,12 @@ const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 
 const path = require("path");
+const fs = require("fs");
 const isDev = require("electron-is-dev");
 
 const { Reddit } = require("./server/service/RedditService");
+const { download } = require("electron-dl");
+const wallpaper = require("wallpaper");
 
 let mainWindow;
 
@@ -48,4 +51,23 @@ const reddit = new Reddit();
 ipcMain.handle("get-data", async (event, args) => {
   const result = await reddit.getData(args);
   return JSON.stringify(result);
+});
+
+ipcMain.handle("set-wallpaper", async (event, url) => {
+  const extension = url.split(".").slice(-1)[0];
+  const saveFileName = `reddit-wallpaper.${extension}`;
+  let downloadedFilePath = app.getPath("downloads") + "/" + saveFileName;
+
+  // remove if name already present
+  fs.unlink(downloadedFilePath, err => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+  });
+
+  const win = BrowserWindow.getFocusedWindow();
+  await download(win, url, { filename: saveFileName });
+
+  await wallpaper.set(downloadedFilePath);
 });
