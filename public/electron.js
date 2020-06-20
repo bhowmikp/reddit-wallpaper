@@ -10,6 +10,7 @@ const isDev = require("electron-is-dev");
 const { Reddit } = require("./server/service/RedditService");
 const { download } = require("electron-dl");
 const wallpaper = require("wallpaper");
+const Jimp = require("jimp");
 
 let mainWindow;
 
@@ -55,19 +56,27 @@ ipcMain.handle("get-data", async (event, args) => {
 
 ipcMain.handle("set-wallpaper", async (event, url) => {
   const extension = url.split(".").slice(-1)[0];
-  const saveFileName = `reddit-wallpaper.${extension}`;
-  let downloadedFilePath = app.getPath("downloads") + "/" + saveFileName;
+
+  const filenameWithoutExtension = "reddit-wallpaper";
+  const filenameWithExtension = `reddit-wallpaper.${extension}`;
+  const filePath = app.getPath("downloads") + "/";
 
   // remove if name already present
-  fs.unlink(downloadedFilePath, err => {
-    if (err) {
-      console.error(err);
-      return;
-    }
-  });
+  fs.unlink(filePath + filenameWithExtension, () => {});
 
   const win = BrowserWindow.getFocusedWindow();
-  await download(win, url, { filename: saveFileName });
+  await download(win, url, { filename: filenameWithExtension });
 
-  await wallpaper.set(downloadedFilePath);
+  // convert png to jpg
+  if (extension === "png") {
+    const jimpPicture = await Jimp.read(filePath + filenameWithExtension);
+    jimpPicture
+      .quality(100)
+      .write(filePath + filenameWithoutExtension + ".jpg");
+
+    // remove png version
+    fs.unlink(filePath + filenameWithExtension, () => {});
+  }
+
+  await wallpaper.set(filePath + filenameWithoutExtension + ".jpg");
 });
