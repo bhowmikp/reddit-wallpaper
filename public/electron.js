@@ -78,5 +78,7 @@ ipcMain.handle("set-wallpaper", async (event, url) => {
     fs.unlink(filePath + filenameWithExtension, () => {});
   }
 
-  await wallpaper.set(filePath + filenameWithoutExtension + ".jpg");
+  await wallpaper.set(filePath + filenameWithoutExtension + ".jpg", {
+    scale: "stretch"
+  });
 });
